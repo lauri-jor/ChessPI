@@ -54,11 +54,11 @@ char pieceToChar(PieceType piece)
 }
 
 PieceType board[8][8] = {
-    {RB, XX, BB, QB, KB, XX, NB, RB},
+    {RB, XX, BB, QB, XX, XX, NB, RB},
     {PB, PB, PB, XX, XX, PB, PB, PB},
-    {XX, XX, NB, XX, BB, XX, XX, XX},
+    {XX, QW, NB, XX, XX, XX, KB, XX},
     {XX, XX, XX, PW, PB, XX, XX, XX},
-    {RB, XX, XX, XX, XX, XX, XX, XX},
+    {RB, XX, XX, XX, BW, XX, XX, XX},
     {RW, PW, PW, PB, NW, NW, XX, XX},
     {PW, XX, XX, XX, XX, PW, PW, PW},
     {RW, NW, BW, QW, KW, BW, XX, RW}};
@@ -166,7 +166,7 @@ int getNotationInput(int &startLetter, int &startNumber, int &endLetter, int &en
     std::string startNotation;
     std::cin >> startNotation;
 
-    DUMMYUNIONNAME5 if (checkCorrectNotation(startNotation) != true)
+    if (checkCorrectNotation(startNotation) != true)
     {
         return -1;
     }
@@ -254,6 +254,22 @@ int checkIfLineIsClear(int startPosLetter, int startPosNumber, int endPosLetter,
         }
     }
     return 1; // vergleich anfangs und endposition und  guckt ob dazwischen figuren stehen und ob beide position inder selben reihe sind
+}
+int returnColor(int positionLetter, int positionNumber)
+{ // ret 1 = weiss; ret 2 = Schwarz; ret 3 = Keine Figur
+    PieceType piece = board[positionNumber][positionLetter];
+    if (piece >= PW && piece <= KW)
+    {
+        return 1;
+    }
+    else if (piece >= PB && piece <= KB)
+    {
+        return 2;
+    }
+    else
+    {
+        return 3;
+    }
 }
 
 int checkStartAndEndPosition(int startPosLetter, int startPosNumber, int endPosLetter, int endPosNumber)
@@ -427,23 +443,21 @@ int pawnWhite(int startPosLetter, int startPosNumber, int endPosLetter, int endP
         }
     }
 
-
-   
-    if ((startPosNumber - 1 == endPosNumber) && (abs(startPosLetter - endPosLetter) == 1)) //wenn Zug diagonal nach vorne-rechts oder vorne links  ausgeführt wird
-    { // geht nur wenn eine Figur geschlagen wird darum testen ob nicht XX. Eigene Figuren wurde schon getestet
-        if(board[endPosNumber][endPosLetter] != XX){
-            std::cout << "\n Ihr Zug ist legal."; //normales Schlagen
+    if ((startPosNumber - 1 == endPosNumber) && (abs(startPosLetter - endPosLetter) == 1)) // wenn Zug diagonal nach vorne-rechts oder vorne links  ausgeführt wird
+    {                                                                                      // geht nur wenn eine Figur geschlagen wird darum testen ob != XX. Eigene Figuren wird schon vorher getestet
+        if (board[endPosNumber][endPosLetter] != XX)
+        {
+            std::cout << "\n Ihr Zug ist legal."; // normales Schlagen
             return 1;
         }
-        if((board[endPosNumber+1][endPosLetter] == PB) && (endPosNumber == 2)){ 
-            std::cout << "\n Ihr Zug ist legal wenn der en passant Bauer letzten Zug um zwei gezogen ist.";  //wenn neben dem gezogenen Bauer eine andere Bauer steht der letzten zug zwei felder ging ist en passent moeglich
+        if ((board[endPosNumber + 1][endPosLetter] == PB) && (endPosNumber == 2))
+        {
+            std::cout << "\n Ihr Zug ist legal wenn der en passant Bauer letzten Zug um zwei gezogen ist."; // wenn neben dem gezogenen Bauer eine andere Bauer steht der letzten zug zwei felder ging ist en passent moeglich
             return 1;
         }
     }
-    std::cout << "\nIhr Zug ist nicht legal.";  //alle anderen Bauern bewegungen sind illegal
+    std::cout << "\nIhr Zug ist nicht legal."; // alle anderen Bauern bewegungen sind illegal
     return -1;
-    
-
 }
 int pawnBlack(int startPosLetter, int startPosNumber, int endPosLetter, int endPosNumber)
 {
@@ -466,29 +480,193 @@ int pawnBlack(int startPosLetter, int startPosNumber, int endPosLetter, int endP
         }
     }
 
-
-   
-    if ((startPosNumber + 1 == endPosNumber) && (abs(startPosLetter - endPosLetter) == 1)) //wenn Zug diagonal nach vorne-rechts oder vorne links  ausgeführt wird
-    { // geht nur wenn eine Figur geschlagen wird darum testen ob nicht XX. Eigene Figuren wurde schon getestet
-        if(board[endPosNumber][endPosLetter] != XX){
-            std::cout << "\n Ihr Zug ist legal."; //normales Schlagen
+    if ((startPosNumber + 1 == endPosNumber) && (abs(startPosLetter - endPosLetter) == 1)) // wenn Zug diagonal nach vorne-rechts oder vorne links  ausgeführt wird
+    {                                                                                      // geht nur wenn eine Figur geschlagen wird darum testen ob nicht XX. Eigene Figuren wurde schon getestet
+        if (board[endPosNumber][endPosLetter] != XX)
+        {
+            std::cout << "\n Ihr Zug ist legal."; // normales Schlagen
             return 1;
         }
-        if((board[endPosNumber - 1][endPosLetter] == PB) && (endPosNumber == 5)){ 
-            std::cout << "\n Ihr Zug ist legal wenn der en passant Bauer letzten Zug um zwei gezogen ist.";  //wenn neben dem gezogenen Bauer eine andere Bauer steht der letzten zug zwei felder ging ist en passent moeglich
+        if ((board[endPosNumber - 1][endPosLetter] == PB) && (endPosNumber == 5))
+        {
+            std::cout << "\n Ihr Zug ist legal wenn der en passant Bauer letzten Zug um zwei gezogen ist."; // wenn neben dem gezogenen Bauer eine andere Bauer steht der letzten zug zwei felder ging ist en passent moeglich
             return 1;
         }
     }
-    std::cout << "\nIhr Zug ist nicht legal.";  //alle anderen Bauern bewegungen sind illegal
+    std::cout << "\nIhr Zug ist nicht legal."; // alle anderen Bauern bewegungen sind illegal
     return -1;
+}
+int findPositionKings(int &blackKingLetter, int &blackKingNumber, int &whiteKingLetter, int &whiteKingNumber)
+{
+
+    for (int i = 0; i <= 7; i++)
+    {
+        for (int k = 0; k <= 7; k++)
+        {
+            if (board[i][k] == KW)
+            {
+                whiteKingLetter = k;
+                whiteKingNumber = i;
+            }
+            if (board[i][k] == KB)
+            {
+                blackKingLetter = k;
+                blackKingNumber = i;
+            }
+        }
+    }
+    return 1;
+};
+
+int kingInCheck(int blackKingLetter, int blackKingNumber, int whiteKingLetter, int whiteKingNumber)
+{
+    int i = 1;
+    int leftSquares = blackKingLetter;
+    int rightSquares = 7 - blackKingLetter;
+    int upSquares = blackKingNumber;
+    int downSquares = 7 - blackKingNumber;                           // Geben die freien felder an in die jeweilige Richtung
+    int leftUpSquares = std::min(blackKingNumber, blackKingLetter); // std::min gibt die niedriger Zahl der beiden zurück
+    int rightUpSquares = std::min(blackKingNumber, 7 - blackKingLetter);
+    int leftDownSquares = std::min(7 - blackKingNumber, blackKingLetter);
+    int rightDownSquares = std::min(7 - blackKingNumber, 7 - blackKingLetter);
+    bool blackKingInCheck = false;
+    for (i = 1; i <= leftSquares; i++)
+    { // for loop Schach von links
+        if ((board[blackKingNumber][blackKingLetter - i] == RW) || (board[blackKingNumber][blackKingLetter - i] == QW))
+        {
+            blackKingInCheck = true;
+            break;
+        }
+        else if ((board[blackKingNumber][blackKingLetter - i] != XX))
+        { // es steht eine Figur im Weg darum kann der König nicht durch Turm oder Dame im Schach sein
+            break;
+        }
+    }
+    if (blackKingInCheck != true)
+    {
+        for (i = 1; i <= rightSquares; i++)
+        { // for loop Schach von Rechts
+            if ((board[blackKingNumber][blackKingLetter + i] == RW) || (board[blackKingNumber][blackKingLetter - i] == QW))
+            {
+                blackKingInCheck = true;
+                break;
+            }
+            else if ((board[blackKingNumber][blackKingLetter + i] != XX))
+            { // es steht eine Figur im Weg darum kann der König nicht durch Turm oder Dame im Schach sein
+                break;
+            }
+        }
+    }
+     if (blackKingInCheck != true)
+    {
+        for (i = 1; i <= upSquares; i++)
+        { // for loop Schach von Oben
+            if ((board[blackKingNumber - i][blackKingLetter] == RW) || (board[blackKingNumber][blackKingLetter - i] == QW))
+            {
+                blackKingInCheck = true;
+                break;
+            }
+            else if ((board[blackKingNumber - i][blackKingLetter] != XX))
+            { // es steht eine Figur im Weg darum kann der König nicht durch Turm oder Dame im Schach sein
+                break;
+            }
+        }
+    }
+     if (blackKingInCheck != true)
+    {
+        for (i = 1; i <= downSquares; i++)
+        { // for loop Schach von Unten
+            if ((board[blackKingNumber - i][blackKingLetter] == RW) || (board[blackKingNumber][blackKingLetter - i] == QW))
+            {
+                blackKingInCheck = true;
+                break;
+            }
+            else if ((board[blackKingNumber - i][blackKingLetter] != XX))
+            { // es steht eine Figur im Weg darum kann der König nicht durch Turm oder Dame im Schach sein
+                break;
+            }
+        }
+    }
+     if (blackKingInCheck != true)
+    {
+        for (i = 1; i <= leftUpSquares; i++)
+        { // for loop Schach von Obenlinks
+            if ((board[blackKingNumber - i][blackKingLetter - i] == BW) || (board[blackKingNumber][blackKingLetter - i] == QW))
+            {
+                blackKingInCheck = true;
+                break;
+            }
+            else if ((board[blackKingNumber - i][blackKingLetter  - i] != XX))
+            { // es steht eine Figur im Weg darum kann der König nicht durch Läufer oder Dame im Schach sein
+                break;
+            }
+        }
+    }
+     if (blackKingInCheck != true)
+    {
+        for (i = 1; i <= rightUpSquares; i++)
+        { // for loop Schach von Obenrechts
+            if ((board[blackKingNumber - i][blackKingLetter + i] == BW) || (board[blackKingNumber][blackKingLetter - i] == QW))
+            {
+                blackKingInCheck = true;
+                break;
+            }
+            else if ((board[blackKingNumber - i][blackKingLetter  + i] != XX))
+            { // es steht eine Figur im Weg darum kann der König nicht durch Läufer oder Dame im Schach sein
+                break;
+            }
+        }
+    }
+    if (blackKingInCheck != true)
+    {
+        for (i = 1; i <= leftDownSquares; i++)
+        { // for loop Schach von Untenlinks
+            if ((board[blackKingNumber + i][blackKingLetter - i] == BW) || (board[blackKingNumber][blackKingLetter - i] == QW))
+            {
+                blackKingInCheck = true;
+                break;
+            }
+            else if ((board[blackKingNumber + i][blackKingLetter  - i] != XX))
+            { // es steht eine Figur im Weg darum kann der König nicht durch Läufer oder Dame im Schach sein
+                break;
+            }
+        }
+    }
+    if (blackKingInCheck != true)
+    {
+        for (i = 1; i <= rightDownSquares; i++)
+        { // for loop Schach von Untenrechts
+            if ((board[blackKingNumber + i][blackKingLetter + i] == BW) || (board[blackKingNumber][blackKingLetter - i] == QW))
+            {
+                blackKingInCheck = true;
+                break;
+            }
+            else if ((board[blackKingNumber + i][blackKingLetter  + i] != XX))
+            { // es steht eine Figur im Weg darum kann der König nicht durch Läufer oder Dame im Schach sein
+                break;
+            }
+        }
+    }
+
+    //springer in sicht ?
+   if(upSquares > 1 ){
+    if(leftSquares > 1){
+        if (board[blackKingNumber - 2 ][blackKingLetter -1 ] == NW){
+            blackKingInCheck = true;
+        }
+    }
+   }
+
+    return 1;
 }
 
 int checkLegalPieceMovement(int startPosLetter, int startPosNumber, int endPosLetter, int endPosNumber)
 {
 
-    if(checkStartAndEndPosition(startPosLetter, startPosNumber, endPosLetter, endPosNumber)<1){
+    if (checkStartAndEndPosition(startPosLetter, startPosNumber, endPosLetter, endPosNumber) < 1)
+    {
         return -1;
-    } 
+    }
 
     PieceType movingPiece = board[startPosNumber][startPosLetter];
     if (movingPiece == PB)
@@ -539,12 +717,15 @@ int main(int argc, char *argv[])
     while (breakLoop == 1)
     {
         printBoard(board);
+        int blackKingLetter, blackKingNumber, whiteKingLetter, whiteKingNumber;
         int startPosLetter, startPosNumber, endPosLetter, endPosNumber;
         while (getNotationInput(startPosLetter, startPosNumber, endPosLetter, endPosNumber) != true)
         { // leauft solange bis korrekter input gegeben wurde
             std::cout << "\n\nGeben Sie ihren Zug erneut ein!\n";
         }
-
+        int color = returnColor(startPosLetter, startPosNumber); // color =  1 -> weiss; color = 2 -> schwarz; color = 3 -> keine Figur
+        findPositionKings(blackKingLetter, blackKingNumber, whiteKingLetter, whiteKingNumber);
+        kingInCheck(blackKingLetter, blackKingNumber, whiteKingLetter, whiteKingNumber);
         checkLegalPieceMovement(startPosLetter, startPosNumber, endPosLetter, endPosNumber);
         std::cout << "\nWillst du fortfahren gib 1 ein.";
         std::cin >> breakLoop;
